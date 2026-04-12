@@ -72,8 +72,20 @@ public class PlayerInteractEntityListener implements Listener {
         Material statueItem = Material.valueOf(config.getString("statue_item", "ARMOR_STAND"));
         ItemStack itemInHand = player.getInventory().getItemInMainHand();
 
+        // --- NEW LOGIC START ---
+        // Check if the entity is currently a "statue" (No AI)
+        boolean isFrozen;
+        try { isFrozen = !living.hasAI(); } catch (Throwable t) { isFrozen = false; }
 
+        // If it is frozen, and we are NOT holding the statue wand, cancel damage (Invincible against swords/fists)
+        if (isFrozen && !itemInHand.getType().equals(statueItem)) {
+            event.setCancelled(true);
+            return;
+        }
+
+        // If not holding the statue item (and not caught by the check above), ignore
         if (!itemInHand.getType().equals(statueItem)) return;
+        // --- NEW LOGIC END ---
 
         if (living instanceof Villager) {
             String msgKey = player.isSneaking() ? "villager_statue_sneak_message" : "statue_villager_message";
@@ -101,14 +113,12 @@ public class PlayerInteractEntityListener implements Listener {
         }
 
         boolean onlyWhenFrozen = config.getBoolean("statue_rotate_only_when_frozen", false);
-        boolean ai;
-        try { ai = living.hasAI(); } catch (Throwable t) { ai = true; }
 
-        float volume = (float) config.getDouble("statue_sound_volume", 0.2f);
-        float pitch = (float) config.getDouble("statue_sound_pitch", 1.0f);
-
-        if (onlyWhenFrozen && ai) {
-            sendDenyFeedback(player, config, "statue_rotate_need_freeze_message", "statue_permission_sound", volume, pitch);
+        // We can reuse the isFrozen check we did earlier
+        if (onlyWhenFrozen && !isFrozen) {
+            sendDenyFeedback(player, config, "statue_rotate_need_freeze_message", "statue_permission_sound",
+                    (float) config.getDouble("statue_sound_volume", 0.2f),
+                    (float) config.getDouble("statue_sound_pitch", 1.0f));
             event.setCancelled(true);
             return;
         }
@@ -122,7 +132,9 @@ public class PlayerInteractEntityListener implements Listener {
 
         living.setNoDamageTicks(0);
 
-        sendFeedback(player, config, "statue_rotate_message", "statue_rotate_particle", "statue_rotate_sound", l, volume, pitch);
+        sendFeedback(player, config, "statue_rotate_message", "statue_rotate_particle", "statue_rotate_sound", l,
+                (float) config.getDouble("statue_sound_volume", 0.2f),
+                (float) config.getDouble("statue_sound_pitch", 1.0f));
 
         event.setCancelled(true);
     }
@@ -312,6 +324,8 @@ public class PlayerInteractEntityListener implements Listener {
         e.teleport(lock);
 
         e.setAI(false);
+        e.setInvulnerable(true); // <--- Added Invincibility
+
         try { e.setGravity(false); } catch (Throwable ignored) {}
         try { e.setCollidable(false); } catch (Throwable ignored) {}
 
@@ -324,6 +338,8 @@ public class PlayerInteractEntityListener implements Listener {
 
     private void hardUnfreeze(LivingEntity e) {
         e.setAI(true);
+        e.setInvulnerable(false); // <--- Removed Invincibility
+
         try { e.setGravity(true); } catch (Throwable ignored) {}
         try { e.setCollidable(true); } catch (Throwable ignored) {}
 
