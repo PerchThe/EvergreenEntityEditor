@@ -1,24 +1,18 @@
-name: PerchEntityUtils
+name: EvergreenEntityEditor
 version: '1.0.0'
-main: me.perch.entityutils.Main
-api-version: 1.20
-authors: [ KayaLambrex ]
-softdepend: [WorldGuard]
+main: ever.green.EntityEditor
+api-version: '26.1'
+authors: [ Lambrechts ]
+softdepend: [GriefPrevention]
 
 commands:
-  runcommandall:
-    description: Runs a configured command on all online players
-    usage: /runcommandall
-    permission: perchentityutils.runcommandall
-    permission-message: You do not have permission to use this command.
-  rds:
-    description: Reverse Dropper setup commands
-    usage: /rds setstart [regionId]
-    permission: perch.rds.admin
+  ee:
+    description: "Opens the unified Entity Editor hotbar"
+    usage: "/ee"
+    permission: evergreen.ee.use
+    aliases: [entityeditor]
 
 permissions:
-  perchentityutils.runcommandall:
-    description: Allows use of /runcommandall
-    default: op
-  perch.rds.admin:
+  evergreen.ee.use:
+    description: "Allows use of the /ee command and editor mode"
     default: op

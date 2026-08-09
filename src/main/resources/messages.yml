@@ -1,0 +1,328 @@
+prefix: ""
+
+messages:
+  exited_editor: "<dark_gray>» <white>Exited Entity Editor."
+  no_selection: "<dark_gray>» <white>No entity selected! <#7db597>Click an entity <white>with the Selector to begin."
+  name_instructions: "<dark_gray>» <white>Type the new name in chat. Colours are supported! Type <red>cancel <white>to cancel."
+  ai_warning: "<dark_gray>» <yellow>Tip: <white>Mobs will fall down if you adjust their Y-level while <#7db597>AI is on<white>!"
+
+actionbar:
+  selected: "<dark_gray>» <white>Selected: <#48ab76>%entity%"
+  claim_denied: "<dark_gray>» <red>You do not have trust in this player's claim!"
+  not_in_claim: "<dark_gray>» <red>You cannot use the editor outside of claims!"
+  selection_cleared: "<dark_gray>» <white>Selection cleared."
+  select_first: "<dark_gray>» <#7db597>You must select an entity with the Selector first."
+  combat_lock: "<dark_gray>» <red>You cannot freeze a mob that is attacking you!"
+  ai_blocks_rotation: "<dark_gray>» <red>Turn AI off first to rotate mobs!"
+  scale: "<dark_gray>» <white>Scale: <#48ab76>%scale%"
+  ai: "<dark_gray>» <white>AI (Frozen): <#48ab76>%state%"
+  invulnerable: "<dark_gray>» <white>Invulnerable: <#48ab76>%state%"
+  glowing: "<dark_gray>» <white>Glowing: <#48ab76>%state%"
+  silenced: "<dark_gray>» <white>Silenced: <#48ab76>%state%"
+  age_toggled: "<dark_gray>» <#7db597>Age toggled!"
+  untamed: "<dark_gray>» <#7db597>Pet Untamed!"
+  arms: "<dark_gray>» <white>Arms: <#48ab76>%state%"
+  baseplate: "<dark_gray>» <white>Baseplate: <#48ab76>%state%"
+  visibility: "<dark_gray>» <white>Visible: <#48ab76>%state%"
+  locked: "<dark_gray>» <white>Equipment Locked: <#48ab76>%state%"
+  axis_set: "<dark_gray>» <white>Axis set to: <#48ab76>%axis%"
+  pose_adjusted: "<dark_gray>» <white>Adjusted <#7db597>%part% <white>on <#7db597>%axis% <white>axis."
+  pose_reset: "<dark_gray>» <#7db597>Pose Reset!"
+  clipboard_copied: "<dark_gray>» <white>Properties Copied to Clipboard <#7db597>%slot%<white>!"
+  clipboard_pasted: "<dark_gray>» <white>Properties Pasted from Clipboard <#7db597>%slot%<white>!"
+  clipboard_empty: "<dark_gray>» <red>Clipboard %slot% is empty."
+  name_cancelled: "<dark_gray>» <red>Name change cancelled."
+  name_updated: "<dark_gray>» <#7db597>Name updated!"
+  next_restock: "<dark_gray>» <white>Next restock in: <#48ab76>%min%m %sec%s"
+  levelup_cooldown: "<dark_gray>» <red>Villager is leveling up! Please wait %sec%s."
+  blacklisted: "<dark_gray>» <red>This entity cannot be edited!"
+
+items:
+  page:
+    name: "<#48ab76>Page <white>%page%"
+    lore:
+      - ""
+      - "<white>Navigate through the editor's menus!"
+      - ""
+      - "<dark_gray>• <white>Left Click: <gray>Previous Page"
+      - "<dark_gray>• <white>Right Click: <gray>Next Page"
+      - ""
+  exit:
+    name: "<dark_gray>» <red>Exit Editor"
+    lore:
+      - ""
+      - "<white>Finished making your adjustments?"
+      - ""
+      - "<red>Click here <white>to safely exit the editor."
+      - ""
+  selector:
+    name: "<#48ab76>Select <white>/ Deselect"
+    lore:
+      - ""
+      - "<white>Choose which entity to start modifying."
+      - ""
+      - "<dark_gray>• <white>Click Entity: <gray>Select / Deselect"
+      - "<dark_gray>• <white>Click Air: <gray>Clear Selection"
+      - ""
+  place_stand:
+    name: "<#48ab76>Place Armor Stand"
+    lore:
+      - ""
+      - "<white>Ready to start posing and decorating?"
+      - ""
+      - "<dark_gray>• <white>Right Click Block: <gray>Place & Select"
+      - ""
+      - "<white>Uses 1 from your survival inventory."
+      - ""
+  move_x:
+    name: "<#48ab76>Position X"
+    lore:
+      - ""
+      - "<white>Adjust the entity's position on the X-axis."
+      - ""
+      - "<dark_gray>• <white>Left Click: <gray>- <white>| Right Click: <gray>+"
+      - "<dark_gray>• <white>Shift: <gray>Fine adjustment"
+      - ""
+  move_y:
+    name: "<#48ab76>Position Y"
+    lore:
+      - ""
+      - "<white>Adjust the entity's position on the Y-axis."
+      - ""
+      - "<dark_gray>• <white>Left Click: <gray>- <white>| Right Click: <gray>+"
+      - "<dark_gray>• <white>Shift: <gray>Fine adjustment"
+      - ""
+  move_z:
+    name: "<#48ab76>Position Z"
+    lore:
+      - ""
+      - "<white>Adjust the entity's position on the Z-axis."
+      - ""
+      - "<dark_gray>• <white>Left Click: <gray>- <white>| Right Click: <gray>+"
+      - "<dark_gray>• <white>Shift: <gray>Fine adjustment"
+      - ""
+  rotate_global:
+    name: "<#48ab76>Global Rotation"
+    lore:
+      - ""
+      - "<white>Spin the entity around entirely!"
+      - ""
+      - "<dark_gray>• <white>Left Click: <gray>Rotate Left"
+      - "<dark_gray>• <white>Right Click: <gray>Rotate Right"
+      - "<dark_gray>• <white>Shift: <gray>Fine adjustment"
+      - ""
+  rotate_yaw:
+    name: "<#48ab76>Rotate <white>(Yaw)"
+    lore:
+      - ""
+      - "<white>Spin the mob left or right!"
+      - ""
+      - "<dark_gray>• <white>Left Click: <gray>Rotate Left"
+      - "<dark_gray>• <white>Right Click: <gray>Rotate Right"
+      - "<dark_gray>• <white>Shift: <gray>Fine adjustment"
+      - ""
+  rotate_pitch:
+    name: "<#48ab76>Rotate <white>(Pitch)"
+    lore:
+      - ""
+      - "<white>Make the mob look up or down!"
+      - ""
+      - "<dark_gray>• <white>Left Click: <gray>Look Down"
+      - "<dark_gray>• <white>Right Click: <gray>Look Up"
+      - "<dark_gray>• <white>Shift: <gray>Fine adjustment"
+      - ""
+  scale:
+    name: "<#48ab76>Scale <white>/ Size"
+    lore:
+      - ""
+      - "<white>Make your entity tiny or huge!"
+      - ""
+      - "<dark_gray>• <white>Left Click: <gray>Shrink <white>| Right Click: <gray>Grow"
+      - "<dark_gray>• <white>Shift: <gray>Fine adjustment"
+      - ""
+  axis_selector:
+    name: "<dark_gray>» <white>Active Axis: <#48ab76>%axis%"
+    lore:
+      - ""
+      - "<white>Change the axis for posing limbs!"
+      - ""
+      - "<#7db597>Click here <white>to cycle X, Y, Z!"
+      - ""
+  pose_head:
+    name: "<#48ab76>Head"
+    lore:
+      - ""
+      - "<white>Adjust the angle of the head."
+      - ""
+      - "<dark_gray>• <white>Left Click: <gray>- <white>| Right Click: <gray>+"
+      - "<dark_gray>• <white>Shift: <gray>Fine adjustment"
+      - ""
+  pose_body:
+    name: "<#48ab76>Body"
+    lore:
+      - ""
+      - "<white>Adjust the angle of the body."
+      - ""
+      - "<dark_gray>• <white>Left Click: <gray>- <white>| Right Click: <gray>+"
+      - "<dark_gray>• <white>Shift: <gray>Fine adjustment"
+      - ""
+  pose_l_arm:
+    name: "<#48ab76>Left Arm"
+    lore:
+      - ""
+      - "<white>Adjust the angle of the left arm."
+      - ""
+      - "<dark_gray>• <white>Left Click: <gray>- <white>| Right Click: <gray>+"
+      - "<dark_gray>• <white>Shift: <gray>Fine adjustment"
+      - ""
+  pose_r_arm:
+    name: "<#48ab76>Right Arm"
+    lore:
+      - ""
+      - "<white>Adjust the angle of the right arm."
+      - ""
+      - "<dark_gray>• <white>Left Click: <gray>- <white>| Right Click: <gray>+"
+      - "<dark_gray>• <white>Shift: <gray>Fine adjustment"
+      - ""
+  pose_l_leg:
+    name: "<#48ab76>Left Leg"
+    lore:
+      - ""
+      - "<white>Adjust the angle of the left leg."
+      - ""
+      - "<dark_gray>• <white>Left Click: <gray>- <white>| Right Click: <gray>+"
+      - "<dark_gray>• <white>Shift: <gray>Fine adjustment"
+      - ""
+  pose_r_leg:
+    name: "<#48ab76>Right Leg"
+    lore:
+      - ""
+      - "<white>Adjust the angle of the right leg."
+      - ""
+      - "<dark_gray>• <white>Left Click: <gray>- <white>| Right Click: <gray>+"
+      - "<dark_gray>• <white>Shift: <gray>Fine adjustment"
+      - ""
+  equipment_gui:
+    name: "<dark_gray>» <white>Open <#48ab76>Equipment Manager"
+    lore:
+      - ""
+      - "<white>Dress up your armor stand with ease!"
+      - ""
+      - "<#7db597>Click here <white>to open equipment chest."
+      - ""
+  toggle_lock:
+    name: "<dark_gray>» <white>Toggle <#7db597>Equipment Lock"
+    lore:
+      - ""
+      - "<white>Keep your precious items safe!"
+      - ""
+      - "<#7db597>Click here <white>to prevent items from being taken."
+      - ""
+  toggle_invuln:
+    name: "<dark_gray>» <white>Toggle <#7db597>Invulnerability"
+    lore:
+      - ""
+      - "<white>Protect your entity from damage!"
+      - ""
+      - "<#7db597>Click here <white>to toggle invulnerability."
+      - ""
+  toggle_glow:
+    name: "<dark_gray>» <white>Toggle <#7db597>Permanent Glow"
+    lore:
+      - ""
+      - "<white>Make your entity stand out and shine!"
+      - ""
+      - "<#7db597>Click here <white>to toggle permanent glow."
+      - ""
+  toggle_arms:
+    name: "<dark_gray>» <white>Toggle <#7db597>Arms"
+    lore:
+      - ""
+      - "<white>Give your armor stand arms to hold items!"
+      - ""
+      - "<#7db597>Click here <white>to toggle arms."
+      - ""
+  toggle_baseplate:
+    name: "<dark_gray>» <white>Toggle <#7db597>Baseplate"
+    lore:
+      - ""
+      - "<white>Show or hide the stone slab at the bottom."
+      - ""
+      - "<#7db597>Click here <white>to toggle baseplate."
+      - ""
+  toggle_visibility:
+    name: "<dark_gray>» <white>Toggle <#7db597>Visibility"
+    lore:
+      - ""
+      - "<white>Create floating items and magical displays!"
+      - ""
+      - "<#7db597>Click here <white>to toggle visibility."
+      - ""
+  toggle_ai:
+    name: "<dark_gray>» <white>Toggle <#7db597>AI <white>(Freeze)"
+    lore:
+      - ""
+      - "<white>Stop entities from wandering off!"
+      - ""
+      - "<#7db597>Click here <white>to freeze the mob in place."
+      - ""
+  toggle_silence:
+    name: "<dark_gray>» <white>Toggle <#7db597>Silence"
+    lore:
+      - ""
+      - "<white>Enjoy some peace and quiet."
+      - ""
+      - "<#7db597>Click here <white>to toggle silence."
+      - ""
+  toggle_age:
+    name: "<dark_gray>» <white>Toggle <#7db597>Age"
+    lore:
+      - ""
+      - "<white>They grow up so fast..."
+      - ""
+      - "<#7db597>Click here <white>to swap between Baby and Adult."
+      - ""
+  untame:
+    name: "<dark_gray>» <white>Untame <#7db597>Pet"
+    lore:
+      - ""
+      - "<white>Set your pet free into the wild!"
+      - ""
+      - "<#7db597>Click here <white>to untame."
+      - ""
+  edit_name:
+    name: "<dark_gray>» <white>Edit <#7db597>Name"
+    lore:
+      - ""
+      - "<white>Give your entity a custom display name!"
+      - ""
+      - "<#7db597>Click here <white>to change the name."
+      - "<white>Supports color codes!"
+      - ""
+  clipboard:
+    name: "<#48ab76>Clipboard <white>%slot%"
+    lore:
+      - ""
+      - "<white>Easily duplicate complex poses and settings!"
+      - ""
+      - "<dark_gray>• <white>Left Click: <gray>Copy Active"
+      - "<dark_gray>• <white>Right Click: <gray>Paste to Active"
+      - ""
+  reset_pose:
+    name: "<dark_gray>» <white>Reset <#7db597>Pose"
+    lore:
+      - ""
+      - "<white>Made a mistake? Start fresh!"
+      - ""
+      - "<#7db597>Click here <white>to snap limbs back to 0,0,0."
+      - ""
+
+gui:
+  equipment:
+    title: "          <dark_gray>• <#48ab76>Equipment <dark_gray>•"
+    helmet: "<#48ab76>↓ <white>Helmet <#48ab76>↓"
+    chestplate: "<#48ab76>↓ <white>Chestplate <#48ab76>↓"
+    leggings: "<#48ab76>↓ <white>Leggings <#48ab76>↓"
+    boots: "<#48ab76>↓ <white>Boots <#48ab76>↓"
+    main_hand: "<#48ab76>↓ <white>Main Hand <#48ab76>↓"
+    off_hand: "<#48ab76>↓ <white>Off Hand <#48ab76>↓"

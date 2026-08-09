@@ -1,5 +1,5 @@
-trigger_item: CLOCK # Used for age lock/unlock
-silence_item: BELL # Used for silencing/unsilencing
+trigger_item: CLOCK
+silence_item: BELL
 
 success_message: '&aBaby is now locked!'
 success_particle: VILLAGER_HAPPY
@@ -22,6 +22,29 @@ silence_permission_message: '&cYou can''t silence this mob!'
 silence_permission_sound: BLOCK_NOTE_BLOCK_BASS
 silence_sound_volume: 0.2
 silence_sound_pitch: 1.0
+
+statue_item: ARMOR_STAND
+statue_message: '&7Mob has been frozen!'
+unstatue_message: '&aMob has been unfrozen.'
+statue_particle: BLOCK_CRACK
+unstatue_particle: VILLAGER_HAPPY
+statue_sound: BLOCK_STONE_PLACE
+unstatue_sound: ENTITY_ZOMBIE_VILLAGER_CURE
+statue_permission_message: '&cYou can''t freeze mobs here.'
+statue_permission_sound: BLOCK_NOTE_BLOCK_BASS
+villager_statue_sneak_message: '&cYou cannot rotate villagers. Use the bonk feature instead!'
+statue_hostile_message: '&cYou cannot freeze hostile or boss mobs.'
+statue_villager_message: '&cYou cannot freeze villagers, use the ''bonk'' feature instead! Explanation in &f/technical.'
+statue_sound_volume: 0.2
+statue_sound_pitch: 1.0
+
+statue_rotate_degrees_normal: 5.0
+statue_rotate_degrees_shift: 1.0
+statue_rotate_only_when_frozen: true
+statue_rotate_message: '&aRotated!'
+statue_rotate_particle: VILLAGER_HAPPY
+statue_rotate_sound: ENTITY_EXPERIENCE_ORB_PICKUP
+statue_rotate_need_freeze_message: '&cFreeze the mob first to rotate it.'
 
 runcommandall_command: mycommand $player
 
