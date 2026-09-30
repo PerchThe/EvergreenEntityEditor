@@ -1,5 +1,59 @@
 package ever.green.listeners;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.entity.Ageable;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Creature;
+import org.bukkit.entity.EnderDragon;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Giant;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Mob;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Slime;
+import org.bukkit.entity.Tameable;
+import org.bukkit.entity.Villager;
+import org.bukkit.entity.Wither;
+import org.bukkit.entity.Wolf;
+import org.bukkit.entity.Zombie;
+import org.bukkit.entity.memory.MemoryKey;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityTeleportEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.player.PlayerInteractAtEntityEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.world.EntitiesLoadEvent;
+import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.MerchantRecipe;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.EulerAngle;
+import org.bukkit.util.Vector;
+
 import ever.green.EntityEditor;
 import ever.green.managers.EditorSessionManager;
 import ever.green.managers.LanguageManager;
@@ -19,38 +73,6 @@ import net.kyori.adventure.text.event.ClickCallback;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-import org.bukkit.attribute.Attribute;
-import org.bukkit.entity.*;
-import org.bukkit.entity.memory.MemoryKey;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.event.player.PlayerInteractAtEntityEvent;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.MerchantRecipe;
-import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-import org.bukkit.util.EulerAngle;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 public class InteractionListener implements Listener {
 
@@ -62,10 +84,18 @@ public class InteractionListener implements Listener {
     private final Map<UUID, Long> lastInteract = new HashMap<>();
     private final Map<UUID, Long> lastAiWarning = new HashMap<>();
 
+    private final NamespacedKey frozenKey;
+    private final NamespacedKey previousInvulnerableKey;
+    private final Set<UUID> allowedEditorTeleports = new HashSet<>();
+
     public InteractionListener(EntityEditor plugin) {
         this.plugin = plugin;
         this.sessionManager = plugin.getSessionManager();
         this.lang = plugin.getLang();
+
+        this.frozenKey = new NamespacedKey(plugin, "frozen");
+        this.previousInvulnerableKey =
+                new NamespacedKey(plugin, "frozen_previous_invulnerable");
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -74,6 +104,66 @@ public class InteractionListener implements Listener {
         clipboards.remove(uuid);
         lastInteract.remove(uuid);
         lastAiWarning.remove(uuid);
+    }
+
+    private void repairAccidentallyFrozenPlayer(Player player) {
+        PersistentDataContainer data = player.getPersistentDataContainer();
+
+        if (!data.has(frozenKey, PersistentDataType.BYTE)) {
+            return;
+        }
+
+        boolean wasInvulnerable = data.getOrDefault(
+                previousInvulnerableKey,
+                PersistentDataType.BYTE,
+                (byte) 0
+        ) == 1;
+
+        data.remove(frozenKey);
+        data.remove(previousInvulnerableKey);
+
+        // Restore the state from before the accidental freeze.
+        player.setInvulnerable(wasInvulnerable);
+
+        plugin.getLogger().warning(
+                "Removed accidental entity-editor freeze from player "
+                        + player.getName()
+        );
+    }
+
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        repairAccidentallyFrozenPlayer(event.getPlayer());
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onFrozenEntityTeleport(EntityTeleportEvent event) {
+        Entity entity = event.getEntity();
+
+        if (isFrozen(entity)
+                && !allowedEditorTeleports.contains(entity.getUniqueId())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onEntitiesLoad(EntitiesLoadEvent event) {
+        for (Entity entity : event.getEntities()) {
+            if (!(entity instanceof LivingEntity living)) {
+                continue;
+            }
+
+            if (!isFrozen(living)) {
+                continue;
+            }
+
+            stopPendingMovement(living);
+            living.setAI(false);
+
+            if (!(living instanceof ArmorStand)) {
+                living.setInvulnerable(true);
+            }
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -87,6 +177,16 @@ public class InteractionListener implements Listener {
         if (event.getRightClicked() instanceof ArmorStand) return;
 
         Entity clicked = event.getRightClicked();
+
+        if (!sessionManager.isInEditorMode(player)
+                && isFrozen(clicked)
+                && clicked instanceof Tameable) {
+            event.setCancelled(true);
+            player.sendActionBar(
+                    ColorUtil.parse("<red>Unfreeze this pet before changing its state.")
+            );
+            return;
+        }
 
         if (clicked instanceof Villager villager) {
 
@@ -173,6 +273,64 @@ public class InteractionListener implements Listener {
         event.setCancelled(true);
 
         routeInteraction(player, event.getEntity(), true);
+    }
+
+    private boolean isFrozen(Entity entity) {
+        return entity.getPersistentDataContainer().getOrDefault(
+                frozenKey,
+                PersistentDataType.BYTE,
+                (byte) 0
+        ) == 1;
+    }
+
+    private void stopPendingMovement(LivingEntity living) {
+        if (living instanceof Mob mob) {
+            mob.getPathfinder().stopPathfinding();
+            mob.setTarget(null);
+        }
+
+        living.setVelocity(new Vector(0, 0, 0));
+        living.setFallDistance(0);
+    }
+
+    private void freezeEntity(LivingEntity living) {
+        PersistentDataContainer data = living.getPersistentDataContainer();
+
+        if (!isFrozen(living)) {
+            data.set(
+                    previousInvulnerableKey,
+                    PersistentDataType.BYTE,
+                    living.isInvulnerable() ? (byte) 1 : (byte) 0
+            );
+        }
+
+        data.set(frozenKey, PersistentDataType.BYTE, (byte) 1);
+
+        stopPendingMovement(living);
+        living.setAI(false);
+
+        if (!(living instanceof ArmorStand)) {
+            living.setInvulnerable(true);
+        }
+    }
+
+    private void unfreezeEntity(LivingEntity living) {
+        PersistentDataContainer data = living.getPersistentDataContainer();
+
+        // Clear accumulated water, collision and navigation movement before AI returns.
+        stopPendingMovement(living);
+
+        boolean wasInvulnerable = data.getOrDefault(
+                previousInvulnerableKey,
+                PersistentDataType.BYTE,
+                (byte) 0
+        ) == 1;
+
+        data.remove(frozenKey);
+        data.remove(previousInvulnerableKey);
+
+        living.setInvulnerable(wasInvulnerable);
+        living.setAI(true);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -382,34 +540,36 @@ public class InteractionListener implements Listener {
             }
 
             case "toggle_ai" -> {
-                if (target instanceof Creature creature) {
-                    if (creature.getTarget() != null && creature.getTarget().equals(player)) {
-                        player.sendActionBar(lang.getMessage("actionbar.combat_lock"));
-                        player.playSound(target.getLocation(), org.bukkit.Sound.ENTITY_VILLAGER_NO, 1f, 1f);
-                        return;
-                    }
+                if (target instanceof Creature creature
+                        && creature.getTarget() != null
+                        && creature.getTarget().equals(player)) {
+                    player.sendActionBar(lang.getMessage("actionbar.combat_lock"));
+                    player.playSound(
+                            target.getLocation(),
+                            org.bukkit.Sound.ENTITY_VILLAGER_NO,
+                            1f,
+                            1f
+                    );
+                    return;
                 }
 
                 if (target instanceof LivingEntity living) {
-                    boolean currentlyHasAI = living.hasAI();
-                    boolean newAI = !currentlyHasAI;
-                    living.setAI(newAI);
-
-                    if (!(living instanceof ArmorStand)) {
-                        living.setInvulnerable(!newAI);
+                    if (isFrozen(living)) {
+                        unfreezeEntity(living);
+                        player.sendActionBar(
+                                lang.getMessage("actionbar.ai", "%state%", "Unfrozen")
+                        );
+                    } else {
+                        freezeEntity(living);
+                        player.sendActionBar(
+                                lang.getMessage("actionbar.ai", "%state%", "Frozen")
+                        );
                     }
-
-                    if (currentlyHasAI && living instanceof Monster) {
-                        player.playSound(target.getLocation(), org.bukkit.Sound.ENTITY_ZOMBIE_INFECT, 0.5f, 0.5f);
-                        if (living instanceof Creature creature) {
-                            creature.setTarget(null);
-                        }
-                    }
-
-                    player.sendActionBar(lang.getMessage("actionbar.ai", "%state%", (!newAI) ? "Frozen" : "Unfrozen"));
                 }
+
                 return;
             }
+
             case "toggle_invuln" -> {
                 if (target instanceof ArmorStand stand) {
                     stand.setInvulnerable(!stand.isInvulnerable());
@@ -577,6 +737,10 @@ public class InteractionListener implements Listener {
                                                             }
                                                         } else {
                                                             target.customName(ColorUtil.parse(text));
+
+                                                            if (target instanceof LivingEntity living) {
+                                                                living.setRemoveWhenFarAway(false);
+                                                            }
                                                             // FIX: ArmorStands show through walls (holograms), Mobs act like vanilla tags
                                                             if (target instanceof ArmorStand) {
                                                                 target.setCustomNameVisible(true);
@@ -718,7 +882,14 @@ public class InteractionListener implements Listener {
                 player.sendActionBar(lang.getMessage(moveError));
                 return;
             }
-            target.teleport(loc);
+            UUID targetId = target.getUniqueId();
+            allowedEditorTeleports.add(targetId);
+
+            try {
+                target.teleport(loc);
+            } finally {
+                allowedEditorTeleports.remove(targetId);
+            }
             player.playSound(player.getLocation(), org.bukkit.Sound.UI_BUTTON_CLICK, 0.5f, 1.5f);
         }
     }
